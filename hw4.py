@@ -11,6 +11,7 @@ cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 BLOCKWIDTH = 180
 PROGHEIGHT = 20
+WAITTIME = 2
 
 # 設定影像尺寸
 width = 640
@@ -98,16 +99,16 @@ while(True):
         # 判斷經過5幀框格內的變化量是否超過threshold
         
         instruct = 0
-        if b1 >((180 * 180 * 255) / 3):
+        if b1 >((180 * 180 * 255) / 5):
             instruct = 1
         b1 = 0
-        if b2 >((180 * 180 * 255) / 3):
+        if b2 >((180 * 180 * 255) / 5):
             if instruct == 0:
                 instruct = 2
             else:
                 instruct = -1
         b2 = 0
-        if b3 >((180 * 180 * 255) / 3):
+        if b3 >((180 * 180 * 255) / 5):
             if instruct == 0:
                 instruct = 3
             else:
@@ -120,16 +121,16 @@ while(True):
         cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
 
         if(instruct == 1):
-            cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+(int)(BLOCKWIDTH * ((time.time() - lastTime) / 2)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+            cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
         if(instruct == 2):
-            cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (230+(int)(BLOCKWIDTH * ((time.time() - lastTime) / 2)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+            cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (230+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
         if(instruct == 3):
-            cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+(int)(BLOCKWIDTH * ((time.time() - lastTime) / 2)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+            cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
 
 
         print("instruct =", instruct, "time =", time.time() - lastTime, end = '\r')
 
-        if(time.time() - lastTime <= 2 and instruct != 0):
+        if(time.time() - lastTime <= WAITTIME and instruct != 0):
             instruct = -1
         elif(instruct == 0 or instruct == -1):
             lastTime = time.time()
