@@ -144,6 +144,10 @@ while(True):
             webbrowser.open(url)
             instruct = 0
             lastTime = time.time()
+    else:
+        cv2.putText(t1, 'Wait for ' + (str)((int)(5 - (time.time() - startTime))) + ' to start.', (50, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
+        cv2.rectangle(t1, (20, 300), (620, 300+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+        cv2.rectangle(t1, (20, 300), (20+(int)(600 * ((time.time() - startTime) / 5)), 300+PROGHEIGHT), (color[0], color[1], color[2]), -1)
     
     cv2.imshow('frameori',t1)
             
