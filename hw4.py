@@ -116,9 +116,9 @@ while(True):
         b3 = 0
 
         
-        cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
-        cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (230+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
-        cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+        cv2.rectangle(t1, (20 - 1, 20+BLOCKWIDTH), (20+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+        cv2.rectangle(t1, (230 - 1, 20+BLOCKWIDTH), (230+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+        cv2.rectangle(t1, (440 - 1, 20+BLOCKWIDTH), (440+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
 
         if(instruct == 1):
             cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
