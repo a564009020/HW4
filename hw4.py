@@ -118,9 +118,9 @@ while(True):
     
     cv2.imshow('frame',fgmask)
 
-    k = cv2.waitKey(1) # 1msec待つ
+    k = cv2.waitKey(1) # 等1msec
 
-    if (k == 27): # ESCキーで終了
+    if (k == 27): # 按ESC跳出
         break
 
 cap.release()
