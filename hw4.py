@@ -1,10 +1,16 @@
 import cv2
 import webbrowser
+import time
 import numpy as np
 
+
+startTime = time.time()
+lastTime = time.time()
 # 開啟網路攝影機
 cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+BLOCKWIDTH = 180
+PROGHEIGHT = 20
 
 # 設定影像尺寸
 width = 640
@@ -50,11 +56,13 @@ while(True):
         color[2] = color[1]
         color[1] = tmp
         changeColor = False
+        instruct = 0
+        lastTime = time.time()
         
     # 在圖片上畫綠色方框，線條寬度為 2 px 
-    cv2.rectangle(t1, (20, 20), (200, 200), (color[0], color[1], color[2]), 2) 
-    cv2.rectangle(t1, (230, 20), (410, 200), (color[0], color[1], color[2]), 2)
-    cv2.rectangle(t1, (440, 20), (620, 200), (color[0], color[1], color[2]), 2)
+    cv2.rectangle(t1, (20, 20), (20+BLOCKWIDTH, 20+BLOCKWIDTH), (color[0], color[1], color[2]), 2) 
+    cv2.rectangle(t1, (230, 20), (230+BLOCKWIDTH, 20+BLOCKWIDTH), (color[0], color[1], color[2]), 2)
+    cv2.rectangle(t1, (440, 20), (440+BLOCKWIDTH, 20+BLOCKWIDTH), (color[0], color[1], color[2]), 2)
 
     # 左右翻轉frame
     t1 = cv2.flip(t1, 1)
@@ -65,12 +73,12 @@ while(True):
     cv2.putText(t1, 'Color', (240, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
     cv2.putText(t1, 'Google', (450, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
 
-    cv2.imshow('frameori',t1)
+    
     
     fgmask = fgbg.apply(t1)
 
     # 前5幀容易出現偏差，從第6幀開始計算背景相減
-    if flag > 5:
+    if time.time() - startTime > 5:
 
         # 計算共算存5幀的變化量
     
@@ -105,6 +113,27 @@ while(True):
             else:
                 instruct = -1
         b3 = 0
+
+        
+        cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+        cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (230+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+        cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+BLOCKWIDTH, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
+
+        if(instruct == 1):
+            cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+(int)(BLOCKWIDTH * ((time.time() - lastTime) / 2)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+        if(instruct == 2):
+            cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (230+(int)(BLOCKWIDTH * ((time.time() - lastTime) / 2)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+        if(instruct == 3):
+            cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+(int)(BLOCKWIDTH * ((time.time() - lastTime) / 2)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+
+
+        print("instruct =", instruct, "time =", time.time() - lastTime, end = '\r')
+
+        if(time.time() - lastTime <= 2 and instruct != 0):
+            instruct = -1
+        elif(instruct == 0 or instruct == -1):
+            lastTime = time.time()
+
         if instruct == 1:
             break
         if instruct == 2:
@@ -112,6 +141,10 @@ while(True):
         if instruct == 3:
             url = 'https://www.google.com.tw/'
             webbrowser.open(url)
+            instruct = 0
+            lastTime = time.time()
+    
+    cv2.imshow('frameori',t1)
             
 
     flag += 1
