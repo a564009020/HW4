@@ -144,8 +144,7 @@ while(True):
         if instruct == 3:
             url = 'https://www.google.com.tw/'
             webbrowser.open(url)
-            instruct = 0
-            lastTime = time.time()
+            
         if instruct != 0 and instruct != -1:
             lastDoneInstruct = instruct
             doneTime = time.time()
