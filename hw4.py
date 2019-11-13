@@ -12,7 +12,7 @@ cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
 BLOCKWIDTH = 180
 PROGHEIGHT = 20
-WAITTIME = 1
+WAITTIME = 2
 
 # 設定影像尺寸
 width = 640
