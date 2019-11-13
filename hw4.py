@@ -10,9 +10,6 @@ doneTime = time.time()
 # 開啟網路攝影機
 cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
-BLOCKWIDTH = 180
-PROGHEIGHT = 20
-WAITTIME = 2
 
 # 設定影像尺寸
 width = 640
@@ -39,6 +36,9 @@ frameSum = np.zeros((height,width,3), np.uint8)
 fgbg = cv2.createBackgroundSubtractorMOG2(history = 1000)
 
 # variables
+BLOCKWIDTH = 180
+PROGHEIGHT = 20
+WAITTIME = 2
 flag = 0
 counter = 0
 b1 = 0
@@ -81,25 +81,19 @@ while(True):
     
     fgmask = fgbg.apply(t1)
 
-    # 前5幀容易出現偏差，從第6幀開始計算背景相減
+    # 前幾幀容易出現偏差，等5秒在開始
     if time.time() - startTime > 5:
-
-        # 計算共算存5幀的變化量
     
-            # buttom1 Exit
+        # 計算變化量
         for row in range(20, 200):
             for col in range(20, 200):
                 b1 += fgmask[row][col]
-        # buttom2 變換顏色
         for row in range(20, 200):
             for col in range(230, 410):
                 b2 += fgmask[row][col]
-        # buttom3 開啟google
         for row in range(20, 200):
             for col in range(440, 620):
                 b3 += fgmask[row][col]
-        
-        # 判斷經過5幀框格內的變化量是否超過threshold
         
         instruct = 0
         if b1 >((180 * 180 * 255) / 4):
@@ -118,7 +112,7 @@ while(True):
                 instruct = -1
         b3 = 0
 
-        
+        # 顯示讀條
         cv2.rectangle(t1, (20 - 1, 20+BLOCKWIDTH), (20+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
         cv2.rectangle(t1, (230 - 1, 20+BLOCKWIDTH), (230+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
         cv2.rectangle(t1, (440 - 1, 20+BLOCKWIDTH), (440+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
@@ -131,7 +125,6 @@ while(True):
             if(instruct == 3):
                 cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (min(440+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 620), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
 
-
         print("instruct =", instruct, "time =", time.time() - lastTime, end = '\r')
         if time.time() - lastTime <= WAITTIME and instruct != 0:
             if lastInstruct != instruct or (lastDoneInstruct == instruct and time.time() - doneTime < WAITTIME):
@@ -141,10 +134,13 @@ while(True):
         else:
             lastTime = time.time()
         
+        # buttom1 Exit
         if instruct == 1:
             break
+        # buttom2 變換顏色
         if instruct == 2:
             changeColor = True
+        # buttom3 開啟google
         if instruct == 3:
             url = 'https://www.google.com.tw/'
             webbrowser.open(url)
