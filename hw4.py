@@ -6,6 +6,7 @@ import numpy as np
 
 startTime = time.time()
 lastTime = time.time()
+doneTime = time.time()
 # 開啟網路攝影機
 cap = cv2.VideoCapture(1)
 cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
@@ -45,6 +46,8 @@ b2 = 0
 b3 = 0
 color = [0, 255, 0] 
 changeColor = False
+lastInstruct = -1
+lastDoneInstruct = 0
 
 while(True):
     t1 = t0
@@ -99,16 +102,16 @@ while(True):
         # 判斷經過5幀框格內的變化量是否超過threshold
         
         instruct = 0
-        if b1 >((180 * 180 * 255) / 5):
+        if b1 >((180 * 180 * 255) / 4):
             instruct = 1
         b1 = 0
-        if b2 >((180 * 180 * 255) / 5):
+        if b2 >((180 * 180 * 255) / 4):
             if instruct == 0:
                 instruct = 2
             else:
                 instruct = -1
         b2 = 0
-        if b3 >((180 * 180 * 255) / 5):
+        if b3 >((180 * 180 * 255) / 4):
             if instruct == 0:
                 instruct = 3
             else:
@@ -120,21 +123,24 @@ while(True):
         cv2.rectangle(t1, (230 - 1, 20+BLOCKWIDTH), (230+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
         cv2.rectangle(t1, (440 - 1, 20+BLOCKWIDTH), (440+BLOCKWIDTH - 1, 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), 2)
 
-        if(instruct == 1):
-            cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (20+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
-        if(instruct == 2):
-            cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (230+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
-        if(instruct == 3):
-            cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (440+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+        if lastDoneInstruct != instruct or time.time() - doneTime > WAITTIME:
+            if(instruct == 1):
+                cv2.rectangle(t1, (20, 20+BLOCKWIDTH), (min(20+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 200), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+            if(instruct == 2):
+                cv2.rectangle(t1, (230, 20+BLOCKWIDTH), (min(230+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 410), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
+            if(instruct == 3):
+                cv2.rectangle(t1, (440, 20+BLOCKWIDTH), (min(440+(int)(BLOCKWIDTH * ((time.time() - lastTime) / WAITTIME)), 620), 20+BLOCKWIDTH+PROGHEIGHT), (color[0], color[1], color[2]), -1)
 
 
         print("instruct =", instruct, "time =", time.time() - lastTime, end = '\r')
-
-        if(time.time() - lastTime <= WAITTIME and instruct != 0):
+        if time.time() - lastTime <= WAITTIME and instruct != 0:
+            if lastInstruct != instruct or (lastDoneInstruct == instruct and time.time() - doneTime < WAITTIME):
+                lastTime = time.time()
+            lastInstruct = instruct
             instruct = -1
-        elif(instruct == 0 or instruct == -1):
+        else:
             lastTime = time.time()
-
+        
         if instruct == 1:
             break
         if instruct == 2:
@@ -144,13 +150,15 @@ while(True):
             webbrowser.open(url)
             instruct = 0
             lastTime = time.time()
+        if instruct != 0 and instruct != -1:
+            lastDoneInstruct = instruct
+            doneTime = time.time()
     else:
         cv2.putText(t1, 'Wait for ' + (str)((int)(5 - (time.time() - startTime))) + ' to start.', (50, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
         cv2.rectangle(t1, (20, 300), (620, 300+PROGHEIGHT), (color[0], color[1], color[2]), 2)
         cv2.rectangle(t1, (20, 300), (20+(int)(600 * ((time.time() - startTime) / 5)), 300+PROGHEIGHT), (color[0], color[1], color[2]), -1)
     
-    cv2.imshow('frameori',t1)
-            
+    cv2.imshow('frameori', t1)
 
     flag += 1
     
