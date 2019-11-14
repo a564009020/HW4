@@ -24,8 +24,6 @@ area = width * height
 
 # 初始化平均影像
 ret, frame = cap.read()
-avg = cv2.blur(frame, (4, 4))
-avg_float = np.float32(avg)
     
 t0 = cap.read()[1]
 
