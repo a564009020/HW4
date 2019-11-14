@@ -8,8 +8,7 @@ startTime = time.time()
 lastTime = time.time()
 doneTime = time.time()
 # 開啟網路攝影機
-cap = cv2.VideoCapture(1)
-cap.set(cv2.CAP_PROP_AUTOFOCUS, 0)
+cap = cv2.VideoCapture(0)
 
 # 設定影像尺寸
 width = 640
@@ -19,18 +18,8 @@ height = 360
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
-# 計算畫面面積
-area = width * height
-
-# 初始化平均影像
-ret, frame = cap.read()
-avg = cv2.blur(frame, (4, 4))
-avg_float = np.float32(avg)
-    
+# 初始化影像
 t0 = cap.read()[1]
-
-markColor=(0,255,0)
-frameSum = np.zeros((height,width,3), np.uint8)
 
 # MOG2
 fgbg = cv2.createBackgroundSubtractorMOG2(history = 1000)
@@ -63,17 +52,17 @@ while(True):
         instruct = 0
         lastTime = time.time()
         
+    # 左右翻轉frame
+    t1 = cv2.flip(t1, 1)
+
     # 在圖片上畫綠色方框，線條寬度為 2 px 
     cv2.rectangle(t1, (20, 20), (20+BLOCKWIDTH, 20+BLOCKWIDTH), (color[0], color[1], color[2]), 2) 
     cv2.rectangle(t1, (230, 20), (230+BLOCKWIDTH, 20+BLOCKWIDTH), (color[0], color[1], color[2]), 2)
     cv2.rectangle(t1, (440, 20), (440+BLOCKWIDTH, 20+BLOCKWIDTH), (color[0], color[1], color[2]), 2)
 
-    # 左右翻轉frame
-    t1 = cv2.flip(t1, 1)
-
     # 文字
     cv2.putText(t1, 'Exit', (30, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
-    cv2.putText(t1, 'Cange', (240, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
+    cv2.putText(t1, 'Change', (240, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
     cv2.putText(t1, 'Color', (240, 90), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
     cv2.putText(t1, 'Google', (450, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (color[0], color[1], color[2]), 1, cv2.LINE_AA)
 
