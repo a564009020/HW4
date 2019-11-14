@@ -13,7 +13,7 @@ cap = cv2.VideoCapture(0)
 
 # 設定影像尺寸
 width = 1280
-height = 720
+height = 960
 
 # 設定擷取影像的尺寸大小
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
@@ -35,7 +35,7 @@ b1 = 0
 b2 = 0
 b3 = 0
 b4 = 0
-color = [0, 255, 0] 
+color = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)] 
 changeColor = False
 lastInstruct = -1
 lastDoneInstruct = 0
@@ -160,11 +160,12 @@ while(True):
         cv2.rectangle(t1, (20, 300), (830, 300+PROGHEIGHT), (color[0], color[1], color[2]), 2)
         cv2.rectangle(t1, (20, 300), (20+(int)(810 * ((time.time() - startTime) / 5)), 300+PROGHEIGHT), (color[0], color[1], color[2]), -1)
     
+    cv2.imshow('frame',fgmask)
     cv2.imshow('frameori', t1)
 
     flag += 1
     
-    cv2.imshow('frame',fgmask)
+    
 
     k = cv2.waitKey(1) # 等1msec
 
